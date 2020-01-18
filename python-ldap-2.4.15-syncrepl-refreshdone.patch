@@ -1,0 +1,56 @@
+diff -up python-ldap-2.4.15/Demo/pyasn1/syncrepl.py.syncrepl-refreshdone python-ldap-2.4.15/Demo/pyasn1/syncrepl.py
+--- python-ldap-2.4.15/Demo/pyasn1/syncrepl.py.syncrepl-refreshdone	2014-03-07 15:01:11.000000000 -0500
++++ python-ldap-2.4.15/Demo/pyasn1/syncrepl.py	2014-09-26 10:31:42.360101157 -0400
+@@ -93,6 +93,9 @@ class SyncReplConsumer(ReconnectLDAPObje
+             for uuid in uuids:
+                     self.__presentUUIDs[uuid] = True
+ 
++    def syncrepl_refreshdone(self):
++        print 'Initial synchronization is now done, persist phase begins'
++
+     def perform_application_sync(self,dn,attributes,previous_attributes):
+         print 'Performing application sync for:', dn
+         return True
+diff -up python-ldap-2.4.15/Lib/ldap/syncrepl.py.syncrepl-refreshdone python-ldap-2.4.15/Lib/ldap/syncrepl.py
+--- python-ldap-2.4.15/Lib/ldap/syncrepl.py.syncrepl-refreshdone	2014-03-07 15:01:12.000000000 -0500
++++ python-ldap-2.4.15/Lib/ldap/syncrepl.py	2014-09-26 10:32:29.503115251 -0400
+@@ -330,7 +330,6 @@ class SyncreplConsumer:
+         self.__refreshDone = False
+         return self.search_ext(base, scope, **search_args)
+ 
+-
+     def syncrepl_poll(self, msgid=-1, timeout=None, all=0):
+         """
+         polls for and processes responses to the syncrepl_search() operation.
+@@ -394,12 +393,16 @@ class SyncreplConsumer:
+                         self.syncrepl_present(None, refreshDeletes=False)
+                         if 'cookie' in sim.refreshPresent:
+                             self.syncrepl_set_cookie(sim.refreshPresent['cookie'])
+-                        self.__refreshDone=sim.refreshPresent['refreshDone']
++                        if sim.refreshPresent['refreshDone']:
++                            self.__refreshDone = True
++                            self.syncrepl_refreshdone()
+                     elif sim.refreshDelete is not None:
+                         self.syncrepl_present(None, refreshDeletes=True)
+                         if 'cookie' in sim.refreshDelete:
+                             self.syncrepl_set_cookie(sim.refreshDelete['cookie'])
+-                        self.__refreshDone=sim.refreshDelete['refreshDone']
++                        if sim.refreshDelete['refreshDone']:
++                            self.__refreshDone = True
++                            self.syncrepl_refreshdone()
+                     elif sim.syncIdSet is not None:
+                         if sim.syncIdSet['refreshDeletes'] is True:
+                             self.syncrepl_delete(sim.syncIdSet['syncUUIDs'])
+@@ -467,3 +470,12 @@ class SyncreplConsumer:
+ 
+         """
+         pass
++
++    def syncrepl_refreshdone(self):
++        """
++        Called by syncrepl_poll() between refresh and persist phase.
++
++        It indicates that initial synchronization is done and persist phase
++        follows.
++        """
++        pass
