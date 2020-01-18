@@ -1,13 +1,11 @@
-diff -up python-ldap-2.4.15/setup.cfg.dirs python-ldap-2.4.15/setup.cfg
---- python-ldap-2.4.15/setup.cfg.dirs	2014-09-09 09:42:01.886397107 -0400
-+++ python-ldap-2.4.15/setup.cfg	2014-09-09 09:43:25.838658296 -0400
-@@ -8,8 +8,7 @@
+diff -ur python-ldap-2.4.6.orig/setup.cfg python-ldap-2.4.6/setup.cfg
+--- python-ldap-2.4.6.orig/setup.cfg	2011-11-27 16:28:04.000000000 +0100
++++ python-ldap-2.4.6/setup.cfg	2012-01-02 16:20:13.840989359 +0100
+@@ -1,6 +1,5 @@
  [_ldap]
- 
- # Define extra include and library dirs if needed
--library_dirs = /opt/openldap-RE24/lib /usr/lib
--include_dirs = /opt/openldap-RE24/include /usr/include/sasl /usr/include
+-library_dirs = /opt/openldap-RE24/lib
+-include_dirs = /opt/openldap-RE24/include /usr/include/sasl
 +include_dirs = /usr/include/sasl
- 
- # These defines needs OpenLDAP built with
- # ./configure --with-cyrus-sasl --with-tls
+ defines = HAVE_SASL HAVE_TLS
+ extra_compile_args = -g
+ extra_objects = 

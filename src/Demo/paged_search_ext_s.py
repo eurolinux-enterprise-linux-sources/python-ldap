@@ -82,6 +82,8 @@ class PagedResultsSearchObject:
         return result_pages,all_results
 
 
+
+
 class MyLDAPObject(ReconnectLDAPObject,PagedResultsSearchObject):
   pass
 

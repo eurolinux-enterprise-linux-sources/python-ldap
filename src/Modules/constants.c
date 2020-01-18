@@ -1,6 +1,6 @@
 /* constants defined for LDAP
  * See http://www.python-ldap.org/ for details.
- * $Id: constants.c,v 1.58 2014/03/12 23:02:42 stroeder Exp $ */
+ * $Id: constants.c,v 1.55 2011/10/14 11:47:08 stroeder Exp $ */
 
 #include "common.h"
 #include "constants.h"
@@ -119,9 +119,6 @@ LDAPinit_constants( PyObject* d )
   add_int(d,SCOPE_BASE);
   add_int(d,SCOPE_ONELEVEL);
   add_int(d,SCOPE_SUBTREE);
-#ifdef LDAP_SCOPE_SUBORDINATE
-  add_int(d,SCOPE_SUBORDINATE);
-#endif
   add_int(d,MOD_ADD);
   add_int(d,MOD_DELETE);
   add_int(d,MOD_REPLACE);
@@ -185,18 +182,6 @@ LDAPinit_constants( PyObject* d )
   add_int(d,OPT_X_TLS_DEMAND);
   add_int(d,OPT_X_TLS_ALLOW);
   add_int(d,OPT_X_TLS_TRY);
-#ifdef LDAP_OPT_X_TLS_PEERCERT
-  add_int(d,OPT_X_TLS_PEERCERT);
-#endif
-#ifdef LDAP_OPT_X_TLS_VERSION
-  add_int(d,OPT_X_TLS_VERSION);
-#endif
-#ifdef LDAP_OPT_X_TLS_CIPHER
-  add_int(d,OPT_X_TLS_CIPHER);
-#endif
-#ifdef LDAP_OPT_X_TLS_PEERCERT
-  add_int(d,OPT_X_TLS_PEERCERT);
-#endif
 #ifdef LDAP_OPT_X_TLS_CRLCHECK
   /* only available if OpenSSL supports it => might cause backward compability problems */
   add_int(d,OPT_X_TLS_CRLCHECK);

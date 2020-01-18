@@ -1,137 +1,4 @@
 ----------------------------------------------------------------
-Released 2.4.15 2014-03-24
-
-Changes since 2.4.14:
-
-Lib/
-* Added missing modules ldap.controls.openldap and
-  ldap.controls.pwdpolicy to setup.py
-* Added missing imports to ldap.controls.pwdpolicy
-* Fixed ldap.controls.pwdpolicy.decodeControlValue() to decode
-  string of digits
-* Support for X-SUBST in schema element class LDAPSyntax
-* Support for X-ORDERED and X-ORIGIN in schema element class AttributeType
-* ldapurl: New scope 'subordinates' defined in 
-  draft-sermersheim-ldap-subordinate-scope
-
-Modules/
-* New constant ldap.SCOPE_SUBORDINATE derived from ldap.h for 
-  draft-sermersheim-ldap-subordinate-scope
-* Fixed constant ldap.sasl.CB_GETREALM (thanks to Martin Pfeifer)
-
-----------------------------------------------------------------
-Released 2.4.14 2014-01-31
-
-Changes since 2.4.13:
-
-Lib/
-* Added ldap.controls.openldap.SearchNoOpControl
-* New method ldap.async.AsyncSearchHandler.afterFirstResult()
-  for doing something right after successfully receiving but before
-  processing first result
-* Better log data written when invoking ldap.LDAPLock.acquire() and
-  ldap.LDAPLock.release()
-* LDAPObject and friends now pass `desc' to ldap.LDAPLock() which
-  results in better logging
-* ldapobject.ReconnectLDAPObject now uses internal class-wide
-  lock for serializing reconnects
-* Method signature of ReconnectLDAPObject.reconnect() changed to be able
-  to call it with separate retry_max and retry_delay values
-
-Modules/
-* Added support for retrieving negotiated TLS version/cipher
-  with LDAPObject.get_option() with the help of upcoming OpenLDAP libs
-
-----------------------------------------------------------------
-Released 2.4.13 2013-06-27
-
-Changes since 2.4.12:
-
-Lib/
-* ldapobject.ReconnectLDAPObject._apply_last_bind() now sends
-  anonymous simple bind request even if the calling application
-  did not to provoke ldap.SERVER_DOWN in method reconnect()
-* ldapobject.ReconnectLDAPObject.reconnect() now also catches
-  ldap.TIMEOUT exception after reconnection attempt
-* Several other fixes for ldapobject.ReconnectLDAPObject
-  (thanks to Jonathan Giannuzzi)
-
-----------------------------------------------------------------
-Released 2.4.12 2013-06-01
-
-Changes since 2.4.11:
-
-Lib/
-* Truly optional import of PyAsn1Error exception which should
-  not fail anymore if pyasn1 is not installed
-
-----------------------------------------------------------------
-Released 2.4.11 2013-05-27
-
-Changes since 2.4.10:
-
-Lib/
-* ldap.controls.DecodeControlTuples() now simply ignores
-  PyAsn1Error exception raised during decoding malformed
-  response control values in case of non-critical controls.
-* ldif.LDIFWriter.unparse() does not simply skip empty
-  records anymore.
-
-----------------------------------------------------------------
-Released 2.4.10 2012-06-07
-
-Changes since 2.4.9:
-
-Lib/
-* ldapobject.ReconnectLDAPObject.reconnect() now preserves
-  order of options set with LDAPObject.set_option before.
-  This is needed e.g. for setting connection-specific TLS options.
-
-Demo/
-* Better version of Demo/pyasn1/syncrepl.py
-  (thanks to Ben Cooksley)
-
-----------------------------------------------------------------
-Released 2.4.9 2012-03-14
-
-Changes since 2.4.8:
-
-Lib/
-* ldapobject.ReconnectLDAPObject.reconnect() now does kind of
-  an internal locking to pause other threads while reconnecting
-  is pending.
-* Changes to bind- and startTLS-related operation methods of
-  class ReconnectLDAPObject for more robustness
-* New constant ldap.OPT_NAMES_DICT contains mapping from
-  integer to variable name for all option-related constants.
-
-----------------------------------------------------------------
-Released 2.4.8 2012-02-21
-
-Changes since 2.4.7:
-
-Lib/
-* Fixed overzealous check for non-unique NAMEs in
-  ldap.schema.subentry.SubSchema.__init__()
-* Fixed typos in control decoding method
-  ldap.controls.simple.OctetStringInteger.decodeControlValue()
-* Added experimental support for draft-vchu-ldap-pwd-policy
-
-----------------------------------------------------------------
-Released 2.4.7 2012-12-19
-
-Changes since 2.4.6:
-
-Lib/
-* Separate classes for request/response controls for RFC 3829
-* Fixed ldap.schema.subentry.SubSchema.attribute_types() to
-  also eliminate double attribute types in MAY clause of
-  DIT content rule
-
-Modules/
-* Fixed memory leak (thanks to David Malcolm)
-
-----------------------------------------------------------------
 Released 2.4.6 2011-11-27
 
 Changes since 2.4.5:
@@ -148,7 +15,7 @@ Changes since 2.4.4:
 Installation:
 * defines for SASL and SSL in setup.cfg to be more friendly to
   Python setup tools (easy_install)
-
+  
 Lib/
 * Fixed typo in ldap.functions._ldap_function_call() which
   always released ldap._ldap_module_lock instead of local lock
@@ -229,7 +96,7 @@ Lib/
   compliance with RFC 2589 (fix available for OpenLDAP ITS#6886)
 * New sub-module ldap.controls.sessiontrack implements request control
   as described in draft-wahl-ldap-session (needs pyasn1_modules)
-
+  
 ----------------------------------------------------------------
 Released 2.4.0 2011-06-02
 
@@ -583,7 +450,7 @@ Lib/
 * Switched back to old implementation of
   ldap.schema.tokenizer.split_tokens() since the new one
   had a bug which deletes the spaces from DESC
-* ldap.INSUFFICIENT_ACCESS is now ignored in
+* ldap.INSUFFICIENT_ACCESS is now ignored in 
   ldap.ldapobject.LDAPObject.search_subschemasubentry_s()
 
 ----------------------------------------------------------------
@@ -1097,4 +964,4 @@ Released 2.0.0pre02 2002-02-01
 ----------------------------------------------------------------
 Released 1.10alpha3 2000-09-19
 
-$Id: CHANGES,v 1.318 2014/03/24 10:22:47 stroeder Exp $
+$Id: CHANGES,v 1.273 2011/11/27 15:26:06 stroeder Exp $

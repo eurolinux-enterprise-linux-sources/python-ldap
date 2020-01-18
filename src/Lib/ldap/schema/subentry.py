@@ -3,7 +3,7 @@ ldap.schema.subentry -  subschema subentry handling
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: subentry.py,v 1.34 2013/09/13 18:02:47 stroeder Exp $
+\$Id: subentry.py,v 1.31 2011/07/22 17:01:46 stroeder Exp $
 """
 
 import ldap.cidict,ldap.schema
@@ -88,7 +88,7 @@ class SubSchema:
     for c in SCHEMA_CLASS_MAPPING.values():
       self.name2oid[c] = ldap.cidict.cidict()
       self.sed[c] = {}
-      self.non_unique_names[c] = ldap.cidict.cidict()
+      self.non_unique_names[c] = set()
 
     # Transform entry dict to case-insensitive dict
     e = ldap.cidict.cidict(sub_schema_sub_entry)
@@ -120,7 +120,7 @@ class SubSchema:
         self.sed[se_class][se_id] = se_instance
 
         if hasattr(se_instance,'names'):
-          for name in ldap.cidict.cidict({}.fromkeys(se_instance.names)).keys():
+          for name in se_instance.names:
             if check_uniqueness and name in self.name2oid[se_class]:
               self.non_unique_names[se_class][se_id] = None
               raise NameNotUnique(attr_value)
@@ -395,6 +395,12 @@ class SubSchema:
         for o in object_class.sup
       ])
 
+    # Removed all mandantory attribute types from
+    # optional attribute type list
+    for a in r_may.keys():
+      if r_must.has_key(a):
+        del r_may[a]
+
     # Process DIT content rules
     if not ignore_dit_content_rule:
       structural_oc = self.get_structural_oc(object_class_list)
@@ -418,12 +424,6 @@ class SubSchema:
               del r_may[a_oid]
             except KeyError:
               pass
-
-    # Remove all mandantory attribute types from
-    # optional attribute type list
-    for a in r_may.keys():
-      if r_must.has_key(a):
-        del r_may[a]
 
     # Apply attr_type_filter to results
     if attr_type_filter:
@@ -464,13 +464,13 @@ def urlfetch(uri,trace_level=0):
     l.simple_bind_s(ldap_url.who or '', ldap_url.cred or '')
     subschemasubentry_dn = l.search_subschemasubentry_s(ldap_url.dn)
     if subschemasubentry_dn is None:
-      s_temp = None
+      subschemasubentry_entry = None
     else:
       if ldap_url.attrs is None:
         schema_attrs = SCHEMA_ATTRS
       else:
         schema_attrs = ldap_url.attrs
-      s_temp = l.read_subschemasubentry_s(
+      subschemasubentry_entry = l.read_subschemasubentry_s(
         subschemasubentry_dn,attrs=schema_attrs
       )
     l.unbind_s()
@@ -480,16 +480,7 @@ def urlfetch(uri,trace_level=0):
     ldif_file = urllib.urlopen(uri)
     ldif_parser = ldif.LDIFRecordList(ldif_file,max_entries=1)
     ldif_parser.parse()
-    subschemasubentry_dn,s_temp = ldif_parser.all_records[0]
-  # Work-around for mixed-cased attribute names
-  subschemasubentry_entry = ldap.cidict.cidict()
-  for at,av in s_temp.items():
-    if at in SCHEMA_CLASS_MAPPING:
-      try:
-        subschemasubentry_entry[at].extend(av)
-      except KeyError:
-        subschemasubentry_entry[at] = av
-  # Finally parse the schema
+    subschemasubentry_dn,subschemasubentry_entry = ldif_parser.all_records[0]
   if subschemasubentry_dn!=None:
     parsed_sub_schema = ldap.schema.SubSchema(subschemasubentry_entry)
   else:

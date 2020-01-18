@@ -4,7 +4,7 @@ ldap.controls.simple - classes for some very simple LDAP controls
 
 See http://www.python-ldap.org/ for details.
 
-$Id: simple.py,v 1.9 2012/08/09 07:01:20 stroeder Exp $
+$Id: simple.py,v 1.5 2011/07/23 08:03:53 stroeder Exp $
 """
 
 import struct,ldap
@@ -48,7 +48,7 @@ class OctetStringInteger(LDAPControl):
     return struct.pack('!Q',self.integerValue)
 
   def decodeControlValue(self,encodedControlValue):
-    self.integerValue = struct.unpack('!Q',encodedControlValue)[0]
+    self.integerValue = self. struct.unpack('!Q',encodedControlValue)[0]
     
 
 class BooleanControl(LDAPControl):
@@ -110,17 +110,7 @@ class ProxyAuthzControl(RequestControl):
     RequestControl.__init__(self,ldap.CONTROL_PROXY_AUTHZ,criticality,authzId)
 
 
-class AuthorizationIdentityRequestControl(ValueLessRequestControl):
-  """
-  Authorization Identity Request and Response Controls
-  """
-  controlType = '2.16.840.1.113730.3.4.16'
-
-  def __init__(self,criticality):
-    ValueLessRequestControl.__init__(self,self.controlType,criticality)
-
-
-class AuthorizationIdentityResponseControl(ResponseControl):
+class AuthorizationIdentityControl(ValueLessRequestControl,ResponseControl):
   """
   Authorization Identity Request and Response Controls
   
@@ -129,13 +119,15 @@ class AuthorizationIdentityResponseControl(ResponseControl):
   authzId
     decoded authorization identity
   """
-  controlType = '2.16.840.1.113730.3.4.15'
+  controlType = '2.16.840.1.113730.3.4.16'
+
+  def __init__(self,criticality):
+    ValueLessRequestControl.__init__(self,self.controlType,criticality)
 
   def decodeControlValue(self,encodedControlValue):
     self.authzId = encodedControlValue
 
-
-KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityResponseControl.controlType] = AuthorizationIdentityResponseControl
+KNOWN_RESPONSE_CONTROLS[AuthorizationIdentityControl.controlType] = AuthorizationIdentityControl
 
 
 class GetEffectiveRightsControl(RequestControl):

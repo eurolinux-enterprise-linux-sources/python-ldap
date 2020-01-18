@@ -3,7 +3,7 @@ schema.py - support for subSchemaSubEntry information
 
 See http://www.python-ldap.org/ for details.
 
-\$Id: models.py,v 1.47 2014/03/12 21:44:10 stroeder Exp $
+\$Id: models.py,v 1.44 2011/07/22 17:19:08 stroeder Exp $
 """
 
 import UserDict,ldap.cidict
@@ -124,8 +124,8 @@ class ObjectClass(SchemaElement):
     an entry of the object class may have
   kind
     Kind of an object class:
-    0 = STRUCTURAL,
-    1 = ABSTRACT,
+    0 = ABSTRACT,
+    1 = STRUCTURAL,
     2 = AUXILIARY
   sup
     This list of strings contains NAMEs or OIDs of object classes
@@ -183,7 +183,7 @@ class ObjectClass(SchemaElement):
 
 
 AttributeUsage = ldap.cidict.cidict({
-  'userApplication':0, # work-around for non-compliant schema
+  'userApplication':0,
   'userApplications':0,
   'directoryOperation':1,
   'distributedOperation':2,
@@ -228,7 +228,6 @@ class AttributeType(SchemaElement):
     checking whether attribute values are lesser-equal than
   usage
     USAGE of an attribute type:
-    0 = userApplications
     1 = directoryOperation,
     2 = distributedOperation,
     3 = dSAOperation
@@ -249,9 +248,7 @@ class AttributeType(SchemaElement):
     'SINGLE-VALUE':None,
     'COLLECTIVE':None,
     'NO-USER-MODIFICATION':None,
-    'USAGE':('userApplications',),
-    'X-ORIGIN':(None,),
-    'X-ORDERED':(None,),
+    'USAGE':('userApplications',)
   }
 
   def _set_attrs(self,l,d):
@@ -262,8 +259,6 @@ class AttributeType(SchemaElement):
     self.equality = d['EQUALITY'][0]
     self.ordering = d['ORDERING'][0]
     self.substr = d['SUBSTR'][0]
-    self.x_origin = d['X-ORIGIN'][0]
-    self.x_ordered = d['X-ORDERED'][0]
     try:
       syntax = d['SYNTAX'][0]
     except IndexError:
@@ -287,6 +282,10 @@ class AttributeType(SchemaElement):
     self.single_value = d['SINGLE-VALUE']!=None
     self.collective = d['COLLECTIVE']!=None
     self.no_user_mod = d['NO-USER-MODIFICATION']!=None
+    try:
+      self.usage = AttributeUsage[d['USAGE'][0]]
+    except KeyError:
+      raise
     self.usage = AttributeUsage.get(d['USAGE'][0],0)
     assert type(self.names)==TupleType
     assert self.desc is None or type(self.desc)==StringType
@@ -321,8 +320,6 @@ class AttributeType(SchemaElement):
         3:" USAGE dSAOperation",
       }[self.usage]
     )
-    result.append(self.key_attr('X-ORIGIN',self.x_origin,quoted=1))
-    result.append(self.key_attr('X-ORDERED',self.x_ordered,quoted=1))
     return '( %s )' % ''.join(result)
 
 
@@ -342,24 +339,19 @@ class LDAPSyntax(SchemaElement):
   token_defaults = {
     'DESC':(None,),
     'X-NOT-HUMAN-READABLE':(None,),
-    'X-BINARY-TRANSFER-REQUIRED':(None,),
-    'X-SUBST':(None,),
   }
 
   def _set_attrs(self,l,d):
     self.desc = d['DESC'][0]
-    self.x_subst = d['X-SUBST'][0]
     self.not_human_readable = \
       NOT_HUMAN_READABLE_LDAP_SYNTAXES.has_key(self.oid) or \
       d['X-NOT-HUMAN-READABLE'][0]=='TRUE'
-    self.x_binary_transfer_required = d['X-BINARY-TRANSFER-REQUIRED'][0]=='TRUE'
     assert self.desc is None or type(self.desc)==StringType
     return
                                   
   def __str__(self):
     result = [str(self.oid)]
     result.append(self.key_attr('DESC',self.desc,quoted=1))
-    result.append(self.key_attr('X-SUBST',self.x_subst,quoted=1))
     result.append(
       {0:'',1:" X-NOT-HUMAN-READABLE 'TRUE'"}[self.not_human_readable]
     )

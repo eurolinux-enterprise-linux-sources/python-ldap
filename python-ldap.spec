@@ -1,8 +1,8 @@
 ### Abstract ###
 
 Name: python-ldap
-Version: 2.4.15
-Release: 2%{?dist}
+Version: 2.4.6
+Release: 4%{?dist}
 Epoch: 0
 License: Python
 Group: System Environment/Libraries
@@ -13,9 +13,6 @@ Source0: http://pypi.python.org/packages/source/p/python-ldap/python-ldap-%{vers
 ### Patches ###
 # Fedora specific patch
 Patch0: python-ldap-2.4.6-dirs.patch
-
-# https://bugzilla.redhat.com/1122495
-Patch1: python-ldap-2.4.15-syncrepl-refreshdone.patch
 
 ### Dependencies ###
 
@@ -43,7 +40,6 @@ OpenLDAP 2.x libraries, and contains modules for other LDAP-related tasks
 %prep
 %setup -q -n python-ldap-%{version}
 %patch0 -p1 -b .dirs
-%patch1 -p1 -b .syncrepl-refreshdone
 
 # clean up cvs hidden files
 rm -rf Demo/Lib/ldap/.cvsignore Demo/.cvsignore Demo/Lib/ldif/.cvsignore Demo/Lib/ldap/async/.cvsignore \
@@ -70,20 +66,6 @@ sed -i 's|#! python|#!/usr/bin/python|g' Demo/simplebrowse.py
 %{python_sitearch}/python_ldap-%{version}-*.egg-info
 
 %changelog
-* Fri Sep 26 2014 Matthew Barnes <mbarnes@redhat.com> - 0:2.4.15-2
-- Add syncrepl_refreshdone() method to SyncreplConsumer class.
-  Need by FreeIPA, subsequently accepted upstream.
-- Resolves: rhbz#1122495
-
-* Tue Sep 09 2014 Matthew Barnes <mbarnes@redhat.com> - 0:2.4.15-1
-- Update to 2.4.15
-
-* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 02.4.6-6
-- Mass rebuild 2014-01-24
-
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 02.4.6-5
-- Mass rebuild 2013-12-27
-
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:2.4.6-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 

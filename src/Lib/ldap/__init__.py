@@ -3,12 +3,12 @@ ldap - base module
 
 See http://www.python-ldap.org/ for details.
 
-$Id: __init__.py,v 1.89 2014/03/12 23:11:26 stroeder Exp $
+$Id: __init__.py,v 1.78 2011/11/27 15:27:00 stroeder Exp $
 """
 
 # This is also the overall release version number
 
-__version__ = '2.4.15'
+__version__ = '2.4.6'
 
 import sys
 
@@ -19,13 +19,7 @@ if __debug__:
   _trace_file = sys.stderr
   _trace_stack_limit = None
 
-import _ldap
 from _ldap import *
-
-OPT_NAMES_DICT = {}
-for k,v in vars(_ldap).items():
-  if k.startswith('OPT_'):
-    OPT_NAMES_DICT[v]=k
 
 class DummyLock:
   """Define dummy class with methods compatible to threading.Lock"""
@@ -68,14 +62,14 @@ class LDAPLock:
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s.acquire() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write('***%s %s.acquire()\n' % (self._desc,self.__class__.__name__))
     return self._lock.acquire()
 
   def release(self):
     if __debug__:
       global _trace_level
       if _trace_level>=self._min_trace_level:
-        _trace_file.write('***%s.release() %s %s\n' % (self.__class__.__name__,repr(self),self._desc))
+        _trace_file.write('***%s %s.release()\n' % (self._desc,self.__class__.__name__))
     return self._lock.release()
 
 
